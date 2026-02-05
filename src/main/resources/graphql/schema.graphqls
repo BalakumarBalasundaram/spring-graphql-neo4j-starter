@@ -1,0 +1,49 @@
+type Query {
+    "Get all persons"
+    persons: [Person!]!
+    
+    "Get person by ID"
+    person(id: ID!): Person
+    
+    "Search persons by name"
+    personsByName(name: String!): [Person!]!
+}
+
+type Mutation {
+    "Create a new person"
+    createPerson(input: CreatePersonInput!): Person!
+    
+    "Create a friendship between two persons"
+    createFriendship(personId: ID!, friendId: ID!): Person!
+    
+    "Delete a person"
+    deletePerson(id: ID!): Boolean!
+}
+
+type Person {
+    "Unique identifier"
+    id: ID!
+    
+    "Person's name"
+    name: String!
+    
+    "Person's email"
+    email: String
+    
+    "Person's age"
+    age: Int
+    
+    "List of friends"
+    friends: [Person!]!
+}
+
+input CreatePersonInput {
+    "Person's name"
+    name: String!
+    
+    "Person's email"
+    email: String
+    
+    "Person's age"
+    age: Int
+}
