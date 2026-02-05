@@ -51,7 +51,7 @@ A minimal Spring Boot project showcasing how to integrate Spring GraphQL with Ne
 ## 📋 Prerequisites
 
 - Java 17 or later
-- Maven 3.6+
+- Gradle 8.5+ (or use the included Gradle wrapper)
 - Docker and Docker Compose (for local development)
 - OpenShift CLI (for deployment)
 
@@ -71,19 +71,19 @@ This will start Neo4j on:
 ### 2. Build the Application
 
 ```bash
-mvn clean package
+./gradlew clean build
 ```
 
 ### 3. Run the Application
 
 ```bash
-mvn spring-boot:run
+./gradlew bootRun
 ```
 
 Or run the JAR directly:
 
 ```bash
-java -jar target/spring-graphql-neo4j-starter-1.0.0-SNAPSHOT.jar
+java -jar build/libs/spring-graphql-neo4j-starter-1.0.0-SNAPSHOT.jar
 ```
 
 The application will start on `http://localhost:8080`
@@ -245,7 +245,7 @@ oc process -f openshift/deployment-template.yaml | oc apply -f -
 Run tests with:
 
 ```bash
-mvn test
+./gradlew test
 ```
 
 ## 📦 Project Structure
@@ -300,7 +300,7 @@ For production, use environment variables:
 - **Spring Data Neo4j**: Neo4j integration
 - **Neo4j 5.13**: Graph database
 - **Lombok**: Reduce boilerplate code
-- **Maven**: Build tool
+- **Gradle**: Build tool
 
 ## 🤝 Contributing
 
@@ -311,7 +311,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ### Start Locally
 ```bash
 docker-compose up -d    # Start Neo4j
-mvn spring-boot:run     # Start application
+./gradlew bootRun       # Start application
 ```
 Access GraphiQL at: http://localhost:8080/graphiql
 

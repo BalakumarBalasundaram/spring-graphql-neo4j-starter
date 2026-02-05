@@ -15,4 +15,4 @@ sleep 10
 
 # Start the Spring Boot application
 echo "3. Starting Spring Boot application..."
-mvn spring-boot:run
+./gradlew bootRun

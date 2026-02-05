@@ -63,7 +63,8 @@ spring-graphql-neo4j-starter/
 ├── docker-compose.yml                           # Local Neo4j setup
 ├── Dockerfile                                   # Container build
 ├── start.sh                                     # Quick start script
-├── pom.xml                                      # Maven configuration
+├── build.gradle                                 # Gradle configuration
+├── settings.gradle                              # Gradle settings
 └── README.md                                    # Project documentation
 ```
 
@@ -117,7 +118,7 @@ spring-graphql-neo4j-starter/
 1. **Local Development**
    ```bash
    docker-compose up -d
-   mvn spring-boot:run
+   ./gradlew bootRun
    ```
 
 2. **Docker Deployment**
