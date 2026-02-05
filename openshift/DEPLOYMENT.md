@@ -62,16 +62,19 @@ docker push <your-registry>/spring-graphql-neo4j-starter:latest
 
 ```powershell
 # Get the internal registry URL
-$REGISTRY=$(oc get route default-route -n openshift-image-registry -o jsonpath='{.spec.host}')
+$REGISTRY = oc get route default-route -n openshift-image-registry -o jsonpath='{.spec.host}'
+
+# Get your token
+$TOKEN = oc whoami -t
 
 # Login to the internal registry
-docker login -u $(oc whoami) -p $(oc whoami -t) $REGISTRY
+docker login -u $(oc whoami) -p $TOKEN $REGISTRY
 
 # Build and tag
-docker build -t $REGISTRY/spring-graphql-neo4j/spring-graphql-neo4j-starter:latest .
+docker build -t "$REGISTRY/spring-graphql-neo4j/spring-graphql-neo4j-starter:latest" .
 
 # Push to internal registry
-docker push $REGISTRY/spring-graphql-neo4j/spring-graphql-neo4j-starter:latest
+docker push "$REGISTRY/spring-graphql-neo4j/spring-graphql-neo4j-starter:latest"
 ```
 
 ### Option 3: Using Source-to-Image (S2I)
@@ -132,8 +135,8 @@ oc get route spring-graphql-app
 To ensure Neo4j data persists across pod restarts:
 
 ```powershell
-# Create a persistent volume claim
-oc apply -f - <<EOF
+# Create a YAML file for the PVC
+@'
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -144,7 +147,10 @@ spec:
   resources:
     requests:
       storage: 5Gi
-EOF
+'@ | Out-File -FilePath neo4j-pvc.yaml -Encoding utf8
+
+# Apply the PVC
+oc apply -f neo4j-pvc.yaml
 
 # Update Neo4j deployment to use the PVC
 oc set volume deployment/neo4j `

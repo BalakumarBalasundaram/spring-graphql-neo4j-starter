@@ -65,11 +65,13 @@ public class PersonService {
     public Person createFriendship(Long personId, Long friendId) {
         log.info("Creating friendship between {} and {}", personId, friendId);
         
-        // Verify both persons exist
-        Person person = personRepository.findById(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Person not found: " + personId));
-        Person friend = personRepository.findById(friendId)
-                .orElseThrow(() -> new IllegalArgumentException("Friend not found: " + friendId));
+        // Verify both persons exist before creating friendship
+        if (!personRepository.existsById(personId)) {
+            throw new IllegalArgumentException("Person not found: " + personId);
+        }
+        if (!personRepository.existsById(friendId)) {
+            throw new IllegalArgumentException("Friend not found: " + friendId);
+        }
         
         // Create friendship using Cypher query
         return personRepository.createFriendship(personId, friendId);
