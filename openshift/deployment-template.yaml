@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: spring-graphql-neo4j-template
+  annotations:
+    description: "Spring Boot GraphQL application with Neo4j database"
+    tags: "spring-boot,graphql,neo4j"
+objects:
+  # Neo4j Database Deployment
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: neo4j
+      labels:
+        app: neo4j
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: neo4j
+      template:
+        metadata:
+          labels:
+            app: neo4j
+        spec:
+          containers:
+            - name: neo4j
+              image: neo4j:5.13.0
+              ports:
+                - containerPort: 7474
+                  name: http
+                - containerPort: 7687
+                  name: bolt
+              env:
+                - name: NEO4J_AUTH
+                  value: "neo4j/password"
+              volumeMounts:
+                - name: neo4j-data
+                  mountPath: /data
+          volumes:
+            - name: neo4j-data
+              persistentVolumeClaim:
+                claimName: neo4j-pvc
+
+  # Neo4j Service
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: neo4j-service
+      labels:
+        app: neo4j
+    spec:
+      type: ClusterIP
+      ports:
+        - port: 7474
+          targetPort: 7474
+          name: http
+        - port: 7687
+          targetPort: 7687
+          name: bolt
+      selector:
+        app: neo4j
+
+  # Persistent Volume Claim for Neo4j
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: neo4j-pvc
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+
+  # Spring Boot Application Deployment
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: spring-graphql-app
+      labels:
+        app: spring-graphql-app
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: spring-graphql-app
+      template:
+        metadata:
+          labels:
+            app: spring-graphql-app
+        spec:
+          containers:
+            - name: spring-graphql-app
+              image: ${APPLICATION_IMAGE}
+              ports:
+                - containerPort: 8080
+                  name: http
+              env:
+                - name: SPRING_NEO4J_URI
+                  value: "bolt://neo4j-service:7687"
+                - name: SPRING_NEO4J_AUTHENTICATION_USERNAME
+                  value: "neo4j"
+                - name: SPRING_NEO4J_AUTHENTICATION_PASSWORD
+                  value: "password"
+              livenessProbe:
+                httpGet:
+                  path: /actuator/health
+                  port: 8080
+                initialDelaySeconds: 30
+                periodSeconds: 10
+              readinessProbe:
+                httpGet:
+                  path: /actuator/health
+                  port: 8080
+                initialDelaySeconds: 20
+                periodSeconds: 5
+
+  # Spring Boot Application Service
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: spring-graphql-service
+      labels:
+        app: spring-graphql-app
+    spec:
+      type: ClusterIP
+      ports:
+        - port: 8080
+          targetPort: 8080
+          name: http
+      selector:
+        app: spring-graphql-app
+
+  # Route to expose the application
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      name: spring-graphql-route
+      labels:
+        app: spring-graphql-app
+    spec:
+      to:
+        kind: Service
+        name: spring-graphql-service
+      port:
+        targetPort: http
+
+parameters:
+  - name: APPLICATION_IMAGE
+    description: "Docker image for the Spring Boot application"
+    value: "spring-graphql-neo4j-starter:latest"
+    required: true
