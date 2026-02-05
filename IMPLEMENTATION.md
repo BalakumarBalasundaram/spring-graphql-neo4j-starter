@@ -170,7 +170,7 @@ While the current implementation is production-ready, consider these enhancement
 
 ## Verification Checklist
 
-- ✅ Maven build succeeds
+- ✅ Gradle build succeeds
 - ✅ Application compiles without errors
 - ✅ All dependencies resolved
 - ✅ GraphQL schema is valid
@@ -193,7 +193,7 @@ While the current implementation is production-ready, consider these enhancement
 | Spring GraphQL | (from Spring Boot) |
 | Spring Data Neo4j | (from Spring Boot) |
 | Neo4j | 5.13.0 |
-| Maven | 3.6+ |
+| Gradle | 8.5 |
 
 ## Summary
 
