@@ -2,6 +2,20 @@
 
 A minimal Spring Boot project showcasing how to integrate Spring GraphQL with Neo4j. This project demonstrates best practices for building GraphQL APIs backed by a graph database.
 
+## 📑 Table of Contents
+
+- [Core Design Principles](#-core-design-principles)
+- [Architecture](#️-architecture)
+- [Prerequisites](#-prerequisites)
+- [Getting Started](#-getting-started)
+- [GraphQL Schema](#-graphql-schema)
+- [Docker Deployment](#-docker-deployment)
+- [OpenShift Deployment](#️-openshift-deployment)
+- [Testing](#-testing)
+- [Project Structure](#-project-structure)
+- [Configuration](#-configuration)
+- [Technologies Used](#-technologies-used)
+
 ## 🎯 Core Design Principles
 
 - **Schema-First GraphQL**: GraphQL schema defined in `.graphqls` files
@@ -291,6 +305,38 @@ For production, use environment variables:
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 🚀 Quick Reference
+
+### Start Locally
+```bash
+docker-compose up -d    # Start Neo4j
+mvn spring-boot:run     # Start application
+```
+Access GraphiQL at: http://localhost:8080/graphiql
+
+### Deploy to OpenShift (Windows)
+```powershell
+oc login <cluster-url>
+oc new-project spring-graphql-neo4j
+docker build -t spring-graphql-neo4j-starter:latest .
+oc process -f openshift/deployment-template.yaml | oc apply -f -
+```
+
+### Example GraphQL Query
+```graphql
+query {
+  persons {
+    id
+    name
+    friends {
+      name
+    }
+  }
+}
+```
+
+See [examples/queries.md](examples/queries.md) for more examples and [openshift/DEPLOYMENT.md](openshift/DEPLOYMENT.md) for detailed deployment instructions.
 
 ## 📄 License
 
